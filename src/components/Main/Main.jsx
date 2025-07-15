@@ -1,4 +1,3 @@
-import avatar from "../../assets/images/Lago-Louise.jpg";
 import pencil from "../../assets/images/pencil.svg";
 import plusSign from "../../assets/images/plussign.svg";
 import NewCard from "./components/Popup/components/NewCard/NewCard";
@@ -7,32 +6,33 @@ import EditAvatar from "./components/Popup/components/EditAvatar/EditAvatar";
 import Popup from "./components/Popup/Popup";
 import Card from "./components/Card/Card";
 import ImagePopup from "./components/Card/ImagePopup/ImagePopup";
+import api from "../../utils/api";
+import CurrentUserContext from "../../contexts/currentUserContext";
 
-import { useState } from "react";
-
-const cards = [
-  {
-    isLiked: false,
-    _id: "5d1f0611d321eb4bdcd707dd",
-    name: "Yosemite Valley",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg",
-    owner: "5d1f0611d321eb4bdcd707dd",
-    createdAt: "2019-07-05T08:10:57.741Z",
-  },
-  {
-    isLiked: false,
-    _id: "5d1f064ed321eb4bdcd707de",
-    name: "Lake Louise",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lake-louise.jpg",
-    owner: "5d1f0611d321eb4bdcd707dd",
-    createdAt: "2019-07-05T08:11:58.324Z",
-  },
-];
-
-console.log(cards);
+import { useEffect, useState, useContext } from "react";
 
 export default function Main() {
+  const currentUserInfo = useContext(CurrentUserContext);
+  console.log(currentUserInfo);
+  const [cards, setCards] = useState([]);
   const [popup, setPopup] = useState(null);
+
+  //recebe cards inicias
+  useEffect(() => {
+    api
+      .getInitialCards()
+      .then((response) => {
+        return !response.ok
+          ? Promise.reject("Deu erro no Get Cards")
+          : response.json();
+      })
+      .then((data) => {
+        setCards(data);
+      })
+      .catch((error) => {
+        console.log(`[GET] - /cards - ${error}`);
+      });
+  }, []);
 
   const newCardPopup = { title: "New card", children: <NewCard /> };
   const EditProfilePopup = { title: "Edit Profile", children: <EditProfile /> };
@@ -58,7 +58,7 @@ export default function Main() {
       <section className="profile">
         <div className="profile-container">
           <img
-            src={avatar}
+            src={currentUserInfo.avatar}
             alt="Imagem de uma senhor sorridente, com touca vermelha esboçando um lindo sorriso"
             className="profile__image"
             onClick={() => {
@@ -72,7 +72,7 @@ export default function Main() {
           />
         </div>
         <div className="profile__feat">
-          <h1 className="profile__title">Jacques Cousteau</h1>
+          <h1 className="profile__title">{currentUserInfo.name}</h1>
           <div
             className="profile__border-pincel"
             onClick={() => handleOpenPopup(EditProfilePopup)}
@@ -83,7 +83,7 @@ export default function Main() {
               className="profile__pincel"
             />
           </div>
-          <p className="profile__text">Explorador</p>
+          <p className="profile__text">{currentUserInfo.about}</p>
         </div>
         <div
           className="profile__border-plus"
