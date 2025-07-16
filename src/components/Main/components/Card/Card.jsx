@@ -1,11 +1,13 @@
-import { useState } from "react";
 import trashIcon from "../../../../assets/images/Trash.svg";
 import hearthIcon from "../../../../assets/images/hearth.svg";
 import Union from "../../../../assets/images/Union.svg";
 
 export default function Card(props) {
-  const { name, link } = props.card;
-  const [isLiked, setIsLiked] = useState(false);
+  const { name, link, isLiked } = props.card;
+
+  function handleLikeClick(card) {
+    props.onCardLike(card);
+  }
 
   return (
     <li className="photos__card">
@@ -23,9 +25,9 @@ export default function Card(props) {
       <div className="photos__elements">
         <h2 className="photos__elements-text">{name}</h2>
         <img
-          onClick={() => setIsLiked(!isLiked)}
+          onClick={() => handleLikeClick(props.card)}
           className="photos__like"
-          src={!isLiked ? hearthIcon : Union}
+          src={isLiked ? Union : hearthIcon}
           alt=""
         />
       </div>

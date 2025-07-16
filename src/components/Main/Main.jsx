@@ -13,7 +13,6 @@ import { useEffect, useState, useContext } from "react";
 
 export default function Main() {
   const currentUserInfo = useContext(CurrentUserContext);
-  console.log(currentUserInfo);
   const [cards, setCards] = useState([]);
   const [popup, setPopup] = useState(null);
 
@@ -52,6 +51,34 @@ export default function Main() {
     };
     handleOpenPopup(imagePopup);
   }
+
+  async function handleCardLike(card) {
+    const isLiked = card.isLiked;
+    isLiked
+      ? await api
+          .removeLike(card._id)
+          .then((res) => res.json())
+          .then((newCard) => {
+            setCards((state) => {
+              return state.map((currentCard) =>
+                currentCard._id === card._id ? newCard : currentCard
+              );
+            });
+          })
+          .catch((error) => console.error(error))
+      : await api
+          .updateLike(card._id)
+          .then((res) => res.json())
+          .then((newCard) => {
+            setCards((state) => {
+              return state.map((currentCard) =>
+                currentCard._id === card._id ? newCard : currentCard
+              );
+            });
+          })
+          .catch((error) => console.error(error));
+  }
+
 
   return (
     <main className="main">
@@ -93,9 +120,15 @@ export default function Main() {
         </div>
       </section>
       <ul className="photos">
-        {cards.map((card) => (
-          <Card key={card._id} card={card} onCardClick={handleCardClick} />
-        ))}
+        {cards &&
+          cards.map((card) => (
+            <Card
+              key={card._id}
+              card={card}
+              onCardClick={handleCardClick}
+              onCardLike={handleCardLike}
+            />
+          ))}
         ;
       </ul>
       {popup && (
