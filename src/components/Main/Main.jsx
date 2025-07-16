@@ -79,6 +79,14 @@ export default function Main() {
           .catch((error) => console.error(error));
   }
 
+  async function handleCardDelete(card) {
+    await api
+      .deleteCard(card._id)
+      .then((response) => response.json())
+      .then(
+        setCards(cards.filter((cardDeleted) => cardDeleted._id !== card._id))
+      );
+  }
 
   return (
     <main className="main">
@@ -127,6 +135,7 @@ export default function Main() {
               card={card}
               onCardClick={handleCardClick}
               onCardLike={handleCardLike}
+              onCardDelete={handleCardDelete}
             />
           ))}
         ;
