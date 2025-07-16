@@ -23,7 +23,6 @@ function App() {
       })
       .then((data) => {
         setCurrentUser(data);
-        console.log("peguei a info");
       })
       .catch((error) => {
         console.log(`[GET]- /user-me ${error}`);
