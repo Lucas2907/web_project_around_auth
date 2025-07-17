@@ -19,7 +19,6 @@ function App() {
           : response.json();
       })
       .then((data) => {
-        console.log(data);
         setCurrentUser(data);
       })
       .catch((error) => {
@@ -45,6 +44,20 @@ function App() {
     })();
   };
 
+  const handleUpdateAvatar = (data) => {(async () => {
+      await api
+        .changeProfileImage(data)
+        .then(() => {
+          setCurrentUser((oldData) => ({
+            ...oldData,
+            avatar: data.avatar,
+          }));
+          handleClosePopup();
+        })
+        .catch((error) => console.error(error));
+    })();
+  };
+
   function handleOpenPopup(popup) {
     setPopup(popup);
   }
@@ -54,7 +67,9 @@ function App() {
 
   return (
     <div className="page">
-      <CurrentUserContext.Provider value={{ currentUser, handleUpdateUser }}>
+      <CurrentUserContext.Provider
+        value={{ currentUser, handleUpdateUser, handleUpdateAvatar }}
+      >
         <Header />
         <Main
           onOpenPopup={handleOpenPopup}
