@@ -4,13 +4,10 @@ import Footer from "./Footer/Footer";
 import { useEffect, useState } from "react";
 import api from "../utils/api";
 import CurrentUserContext from "../contexts/currentUserContext";
+
 function App() {
-  const [currentUser, setCurrentUser] = useState({
-    about: "assas",
-    avatar: "https://picsum.photos/1000",
-    name: "sds",
-    _id: "6bdd2ebff73d2b7d938e3ddd",
-  });
+  const [currentUser, setCurrentUser] = useState({});
+  const [popup, setPopup] = useState(null);
 
   //pega info user atual
   useEffect(() => {
@@ -22,6 +19,7 @@ function App() {
           : response.json();
       })
       .then((data) => {
+        console.log(data);
         setCurrentUser(data);
       })
       .catch((error) => {
@@ -29,11 +27,40 @@ function App() {
       });
   }, []);
 
+  // atualiza info user
+  const handleUpdateUser = (data) => {
+    (async () => {
+      await api
+        .setUserInfo(data)
+        .then(() => {
+          setCurrentUser({
+            name: data.name,
+            about: data.about,
+            avatar: currentUser.avatar,
+            _id: currentUser._id,
+          });
+          handleClosePopup();
+        })
+        .catch((error) => console.error(error));
+    })();
+  };
+
+  function handleOpenPopup(popup) {
+    setPopup(popup);
+  }
+  function handleClosePopup() {
+    setPopup(null);
+  }
+
   return (
     <div className="page">
-      <CurrentUserContext.Provider value={currentUser}>
+      <CurrentUserContext.Provider value={{ currentUser, handleUpdateUser }}>
         <Header />
-        <Main />
+        <Main
+          onOpenPopup={handleOpenPopup}
+          onClosePopup={handleClosePopup}
+          popup={popup}
+        />
         <Footer />
       </CurrentUserContext.Provider>
     </div>
