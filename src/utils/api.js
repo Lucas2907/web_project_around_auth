@@ -12,7 +12,7 @@ class Api {
     });
   }
 
-  setUserInfo({ name, about, avatar }) {
+  setUserInfo({ name, about }) {
     return fetch(`${this._baseUrl}/users/me`, {
       method: "PATCH",
       headers: {
@@ -22,7 +22,6 @@ class Api {
       body: JSON.stringify({
         name,
         about,
-        avatar,
       }),
     });
   }

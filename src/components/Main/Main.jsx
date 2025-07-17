@@ -11,11 +11,9 @@ import CurrentUserContext from "../../contexts/currentUserContext";
 
 import { useEffect, useState, useContext } from "react";
 
-export default function Main() {
-  const currentUserInfo = useContext(CurrentUserContext);
+export default function Main({ onOpenPopup, onClosePopup, popup }) {
+  const { currentUser } = useContext(CurrentUserContext);
   const [cards, setCards] = useState([]);
-  const [popup, setPopup] = useState(null);
-
   //recebe cards inicias
   useEffect(() => {
     api
@@ -37,19 +35,12 @@ export default function Main() {
   const EditProfilePopup = { title: "Edit Profile", children: <EditProfile /> };
   const EditAvatarPopup = { title: "Change Image", children: <EditAvatar /> };
 
-  function handleOpenPopup(popup) {
-    setPopup(popup);
-  }
-  function handleClosePopup() {
-    setPopup(null);
-  }
-
   function handleCardClick(card) {
     const imagePopup = {
       title: "",
-      children: <ImagePopup card={card} onClose={handleClosePopup} />,
+      children: <ImagePopup card={card} onClose={onClosePopup} />,
     };
-    handleOpenPopup(imagePopup);
+    onOpenPopup(imagePopup);
   }
 
   async function handleCardLike(card) {
@@ -93,11 +84,11 @@ export default function Main() {
       <section className="profile">
         <div className="profile-container">
           <img
-            src={currentUserInfo.avatar}
+            src={currentUser.avatar}
             alt="Imagem de uma senhor sorridente, com touca vermelha esboçando um lindo sorriso"
             className="profile__image"
             onClick={() => {
-              handleOpenPopup(EditAvatarPopup);
+              onOpenPopup(EditAvatarPopup);
             }}
           />
           <img
@@ -107,10 +98,10 @@ export default function Main() {
           />
         </div>
         <div className="profile__feat">
-          <h1 className="profile__title">{currentUserInfo.name}</h1>
+          <h1 className="profile__title">{currentUser.name}</h1>
           <div
             className="profile__border-pincel"
-            onClick={() => handleOpenPopup(EditProfilePopup)}
+            onClick={() => onOpenPopup(EditProfilePopup)}
           >
             <img
               src={pencil}
@@ -118,11 +109,11 @@ export default function Main() {
               className="profile__pincel"
             />
           </div>
-          <p className="profile__text">{currentUserInfo.about}</p>
+          <p className="profile__text">{currentUser.about}</p>
         </div>
         <div
           className="profile__border-plus"
-          onClick={() => handleOpenPopup(newCardPopup)}
+          onClick={() => onOpenPopup(newCardPopup)}
         >
           <img src={plusSign} alt="icone de adição" className="profile__plus" />
         </div>
@@ -141,7 +132,7 @@ export default function Main() {
         ;
       </ul>
       {popup && (
-        <Popup onClose={handleClosePopup} title={popup.title}>
+        <Popup onClose={onClosePopup} title={popup.title}>
           {popup.children}
         </Popup>
       )}
