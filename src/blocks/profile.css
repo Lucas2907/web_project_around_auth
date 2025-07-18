@@ -10,6 +10,7 @@
 
 .profile-container:hover {
   cursor: pointer;
+  
 }
 .image-profile-pincel {
   display: none;
@@ -22,6 +23,11 @@
 
 .image-profile-pincel-active {
   display: flex;
+  position: absolute;
+  top: 40%;
+  left: 40%;
+  width: 26px;
+  height: 26px;
 }
 
 .profile__image {
