@@ -1,9 +1,30 @@
+import CurrentUserContext from "../../../../../../contexts/currentUserContext";
+import { useContext, useState } from "react";
 export default function NewCard() {
+  const userContext = useContext(CurrentUserContext);
+  const { handleAddPlaceSubmit } = userContext;
+  const [localName, setLocalName] = useState();
+  const [url, setUrl] = useState();
+
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    handleAddPlaceSubmit({ name: localName, link: url });
+  };
+
+  const handleLocalName = (evt) => {
+    setLocalName(evt.target.value);
+  };
+
+  const handleUrl = (evt) => {
+    setUrl(evt.target.value);
+  };
+
   return (
     <form
       id="creation-form"
       className="popup__forms popup__forms-creation"
-      noValidate=""
+      noValidate
+      onSubmit={handleSubmit}
     >
       <div className="popup__inputs">
         <div className="popup__inputs-container">
@@ -13,9 +34,10 @@ export default function NewCard() {
             id="title"
             name="title"
             placeholder="Título"
-            required=""
+            required
             minLength={2}
             maxLength={30}
+            onChange={handleLocalName}
           />
           <span className="popup__input-error title-error" />
         </div>
@@ -26,7 +48,8 @@ export default function NewCard() {
             id="url"
             name="url"
             placeholder="Link da imagem"
-            required=""
+            required
+            onChange={handleUrl}
           />
           <span className="popup__input-error url-error" />
         </div>

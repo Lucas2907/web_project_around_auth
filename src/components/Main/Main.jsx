@@ -6,30 +6,21 @@ import EditAvatar from "./components/Popup/components/EditAvatar/EditAvatar";
 import Popup from "./components/Popup/Popup";
 import Card from "./components/Card/Card";
 import ImagePopup from "./components/Card/ImagePopup/ImagePopup";
-import api from "../../utils/api";
 import CurrentUserContext from "../../contexts/currentUserContext";
 
-import { useEffect, useState, useContext } from "react";
+import { useContext } from "react";
 
-export default function Main({ onOpenPopup, onClosePopup, popup }) {
+export default function Main({
+  onOpenPopupImage,
+  onOpenPopup,
+  onClosePopup,
+  popup,
+  popupImage,
+  cards,
+  onCardDelete,
+  onCardLike,
+}) {
   const { currentUser } = useContext(CurrentUserContext);
-  const [cards, setCards] = useState([]);
-  //recebe cards inicias
-  useEffect(() => {
-    api
-      .getInitialCards()
-      .then((response) => {
-        return !response.ok
-          ? Promise.reject("Deu erro no Get Cards")
-          : response.json();
-      })
-      .then((data) => {
-        setCards(data);
-      })
-      .catch((error) => {
-        console.log(`[GET] - /cards - ${error}`);
-      });
-  }, []);
 
   const newCardPopup = { title: "New card", children: <NewCard /> };
   const EditProfilePopup = { title: "Edit Profile", children: <EditProfile /> };
@@ -37,46 +28,9 @@ export default function Main({ onOpenPopup, onClosePopup, popup }) {
 
   function handleCardClick(card) {
     const imagePopup = {
-      title: "",
       children: <ImagePopup card={card} onClose={onClosePopup} />,
     };
-    onOpenPopup(imagePopup);
-  }
-
-  async function handleCardLike(card) {
-    const isLiked = card.isLiked;
-    isLiked
-      ? await api
-          .removeLike(card._id)
-          .then((res) => res.json())
-          .then((newCard) => {
-            setCards((state) => {
-              return state.map((currentCard) =>
-                currentCard._id === card._id ? newCard : currentCard
-              );
-            });
-          })
-          .catch((error) => console.error(error))
-      : await api
-          .updateLike(card._id)
-          .then((res) => res.json())
-          .then((newCard) => {
-            setCards((state) => {
-              return state.map((currentCard) =>
-                currentCard._id === card._id ? newCard : currentCard
-              );
-            });
-          })
-          .catch((error) => console.error(error));
-  }
-
-  async function handleCardDelete(card) {
-    await api
-      .deleteCard(card._id)
-      .then((response) => response.json())
-      .then(
-        setCards(cards.filter((cardDeleted) => cardDeleted._id !== card._id))
-      );
+    onOpenPopupImage(imagePopup);
   }
 
   return (
@@ -125,8 +79,8 @@ export default function Main({ onOpenPopup, onClosePopup, popup }) {
               key={card._id}
               card={card}
               onCardClick={handleCardClick}
-              onCardLike={handleCardLike}
-              onCardDelete={handleCardDelete}
+              onCardLike={onCardLike}
+              onCardDelete={onCardDelete}
             />
           ))}
         ;
@@ -136,6 +90,7 @@ export default function Main({ onOpenPopup, onClosePopup, popup }) {
           {popup.children}
         </Popup>
       )}
+      {popupImage && <div>{popupImage.children}</div>}
     </main>
   );
 }
