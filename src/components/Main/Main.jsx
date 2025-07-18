@@ -8,7 +8,7 @@ import Card from "./components/Card/Card";
 import ImagePopup from "./components/Card/ImagePopup/ImagePopup";
 import CurrentUserContext from "../../contexts/currentUserContext";
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 export default function Main({
   onOpenPopupImage,
@@ -21,6 +21,7 @@ export default function Main({
   onCardLike,
 }) {
   const { currentUser } = useContext(CurrentUserContext);
+  const [pencilState, setPencilState] = useState(false);
 
   const newCardPopup = { title: "New card", children: <NewCard /> };
   const EditProfilePopup = { title: "Edit Profile", children: <EditProfile /> };
@@ -33,22 +34,36 @@ export default function Main({
     onOpenPopupImage(imagePopup);
   }
 
+  function handlePencilState(value) {
+    setPencilState(value);
+  }
+
   return (
     <main className="main">
       <section className="profile">
-        <div className="profile-container">
+        <div
+          onClick={() => {
+            onOpenPopup(EditAvatarPopup);
+          }}
+          className="profile-container"
+          onMouseEnter={() => handlePencilState(true)}
+          onMouseLeave={() => handlePencilState(false)}
+        >
           <img
             src={currentUser.avatar}
-            alt="Imagem de uma senhor sorridente, com touca vermelha esboçando um lindo sorriso"
-            className="profile__image"
-            onClick={() => {
-              onOpenPopup(EditAvatarPopup);
-            }}
+            alt={currentUser.name}
+            className={
+              "profile__image" + (pencilState ? " profile__image-opacity" : "")
+            }
           />
           <img
             src={pencil}
             alt="icone de edição"
-            className="image-profile-pincel"
+            className={
+              pencilState
+                ? "image-profile-pincel-active"
+                : "image-profile-pincel"
+            }
           />
         </div>
         <div className="profile__feat">
