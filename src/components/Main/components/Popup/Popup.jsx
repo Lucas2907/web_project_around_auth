@@ -2,9 +2,13 @@ import closeButton from "../../../../assets/images/plussign.svg";
 
 export default function Popup(props) {
   const { onClose, title, children } = props;
+
+  function handleContentClick(e) {
+    e.stopPropagation();
+  }
   return (
-    <div className="popup popup-confirmation">
-      <div className="popup__container">
+    <div className="popup popup-confirmation" onClick={onClose}>
+      <div className="popup__container" onClick={handleContentClick}>
         <img
           src={closeButton}
           alt="imagem de um icone de fechar"

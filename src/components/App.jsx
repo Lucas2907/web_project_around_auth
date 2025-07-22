@@ -121,9 +121,9 @@ function App() {
     (async () => {
       await api
         .createCard(newCard)
-        .then((response) => response.json()) 
+        .then((response) => response.json())
         .then((card) => {
-          setCards([card, ...cards]); 
+          setCards([card, ...cards]);
           handleClosePopup();
         })
         .catch((error) => console.error(error));
@@ -158,6 +158,7 @@ function App() {
           handleAddPlaceSubmit,
           handleCardDelete,
           popupConfirmation,
+          handleClosePopup,
         }}
       >
         <Header />
