@@ -1,10 +1,16 @@
 import plusSign from "../../../../../assets/images/plussign.svg";
-
+import CurrentUserContext from "../../../../../contexts/currentUserContext";
+import { useContext } from "react";
 export default function ImagePopup(props) {
   const { name, link } = props.card;
+  const { handleClosePopup } = useContext(CurrentUserContext);
+
+  function handleContentClick(e) {
+    e.stopPropagation();
+  }
   return (
-    <div className="popup-sobreposition">
-      <div className="popup-image">
+    <div className="popup-sobreposition" onClick={handleClosePopup}>
+      <div className="popup-image" onClick={handleContentClick}>
         <img className="popup-image__image" src={link} alt={name} />
         <p className="popup-image__text">{name}</p>
         <img

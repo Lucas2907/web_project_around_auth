@@ -8,7 +8,7 @@ import Card from "./components/Card/Card";
 import ImagePopup from "./components/Card/ImagePopup/ImagePopup";
 import PopupConfirmation from "./components/Popup/components/popupConfirmation/PopupConfirmation";
 import CurrentUserContext from "../../contexts/currentUserContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 export default function Main({
   onOpenPopupConfirmation,
@@ -43,6 +43,21 @@ export default function Main({
   function handlePencilState(value) {
     setPencilState(value);
   }
+
+  useEffect(() => {
+    function handleEscKey(event) {
+      if (popup || popupImage || popupConfirmation) {
+        if (event.key === "Escape") {
+          onClosePopup();
+        }
+      }
+    }
+
+    document.addEventListener("keydown", handleEscKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [popup, popupImage, popupConfirmation, onClosePopup]);
 
   return (
     <main className="main">
