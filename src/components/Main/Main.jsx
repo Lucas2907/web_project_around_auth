@@ -6,16 +6,18 @@ import EditAvatar from "./components/Popup/components/EditAvatar/EditAvatar";
 import Popup from "./components/Popup/Popup";
 import Card from "./components/Card/Card";
 import ImagePopup from "./components/Card/ImagePopup/ImagePopup";
+import PopupConfirmation from "./components/Popup/components/popupConfirmation/PopupConfirmation";
 import CurrentUserContext from "../../contexts/currentUserContext";
-
 import { useContext, useState } from "react";
 
 export default function Main({
+  onOpenPopupConfirmation,
   onOpenPopupImage,
   onOpenPopup,
   onClosePopup,
   popup,
   popupImage,
+  popupConfirmation,
   cards,
   onCardDelete,
   onCardLike,
@@ -24,8 +26,12 @@ export default function Main({
   const [pencilState, setPencilState] = useState(false);
 
   const newCardPopup = { title: "New card", children: <NewCard /> };
-  const EditProfilePopup = { title: "Edit Profile", children: <EditProfile /> };
-  const EditAvatarPopup = { title: "Change Image", children: <EditAvatar /> };
+  const editProfilePopup = { title: "Edit Profile", children: <EditProfile /> };
+  const editAvatarPopup = { title: "Change Image", children: <EditAvatar /> };
+  const editPopupConfirmation = {
+    title: "Confirmar?",
+    children: <PopupConfirmation />,
+  };
 
   function handleCardClick(card) {
     const imagePopup = {
@@ -43,7 +49,7 @@ export default function Main({
       <section className="profile">
         <div
           onClick={() => {
-            onOpenPopup(EditAvatarPopup);
+            onOpenPopup(editAvatarPopup);
           }}
           className="profile-container"
           onMouseEnter={() => handlePencilState(true)}
@@ -70,7 +76,7 @@ export default function Main({
           <h1 className="profile__title">{currentUser.name}</h1>
           <div
             className="profile__border-pincel"
-            onClick={() => onOpenPopup(EditProfilePopup)}
+            onClick={() => onOpenPopup(editProfilePopup)}
           >
             <img
               src={pencil}
@@ -95,6 +101,7 @@ export default function Main({
               card={card}
               onCardClick={handleCardClick}
               onCardLike={onCardLike}
+              onOpenPopupConfirmation={onOpenPopupConfirmation}
               onCardDelete={onCardDelete}
             />
           ))}
@@ -106,6 +113,11 @@ export default function Main({
         </Popup>
       )}
       {popupImage && <div>{popupImage.children}</div>}
+      {popupConfirmation && (
+        <Popup onClose={onClosePopup} title={editPopupConfirmation.title}>
+          {editPopupConfirmation.children}
+        </Popup>
+      )}
     </main>
   );
 }

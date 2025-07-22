@@ -9,6 +9,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [popup, setPopup] = useState(null);
   const [popupImage, setPopupImage] = useState(null);
+  const [popupConfirmation, setPopupConfirmation] = useState(null);
   const [cards, setCards] = useState([]);
 
   //recebe cards inicias
@@ -62,6 +63,7 @@ function App() {
       .then(
         setCards(cards.filter((cardDeleted) => cardDeleted._id !== card._id))
       );
+    handleClosePopup();
   }
 
   //pega info user atual
@@ -76,6 +78,7 @@ function App() {
       .then((data) => {
         setCurrentUser(data);
       })
+
       .catch((error) => {
         console.log(`[GET]- /user-me ${error}`);
       });
@@ -118,9 +121,9 @@ function App() {
     (async () => {
       await api
         .createCard(newCard)
-        .then(() => {
-          console.log(newCard);
-          setCards([newCard, ...cards]);
+        .then((response) => response.json()) 
+        .then((card) => {
+          setCards([card, ...cards]); 
           handleClosePopup();
         })
         .catch((error) => console.error(error));
@@ -135,9 +138,14 @@ function App() {
     setPopupImage(popupImage);
   }
 
+  function handleOpenPopupConfirmation(popupConfirmation) {
+    setPopupConfirmation(popupConfirmation);
+  }
+
   function handleClosePopup() {
     setPopup(null);
     setPopupImage(null);
+    setPopupConfirmation(null);
   }
 
   return (
@@ -148,18 +156,21 @@ function App() {
           handleUpdateUser,
           handleUpdateAvatar,
           handleAddPlaceSubmit,
+          handleCardDelete,
+          popupConfirmation,
         }}
       >
         <Header />
         <Main
           cards={cards}
           onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
           onOpenPopupImage={handleOpenPopupImage}
           onOpenPopup={handleOpenPopup}
+          onOpenPopupConfirmation={handleOpenPopupConfirmation}
           onClosePopup={handleClosePopup}
           popup={popup}
           popupImage={popupImage}
+          popupConfirmation={popupConfirmation}
         />
         <Footer />
       </CurrentUserContext.Provider>
