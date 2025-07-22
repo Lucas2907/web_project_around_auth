@@ -9,8 +9,8 @@ export default function Card(props) {
     props.onCardLike(card);
   }
 
-  function handleDeleteClick(card) {
-    props.onCardDelete(card);
+  function handleOpenPopupConfirmationClick(card) {
+    props.onOpenPopupConfirmation(card);
   }
 
   return (
@@ -22,7 +22,7 @@ export default function Card(props) {
         onClick={() => props.onCardClick(props.card)}
       />
       <img
-        onClick={() => handleDeleteClick(props.card)}
+        onClick={() => handleOpenPopupConfirmationClick(props.card)}
         className="photos__delete-icon"
         src={trashIcon}
         alt="a trash  icon"
