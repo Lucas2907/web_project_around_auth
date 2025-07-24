@@ -1,22 +1,29 @@
+import { useContext, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import CurrentUserContext from "../../../../../../contexts/currentUserContext";
-import { useContext, useState } from "react";
+
 export default function NewCard() {
-  const userContext = useContext(CurrentUserContext);
-  const { handleAddPlaceSubmit } = userContext;
-  const [localName, setLocalName] = useState();
-  const [url, setUrl] = useState();
+  const { handleAddPlaceSubmit } = useContext(CurrentUserContext);
 
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
-    handleAddPlaceSubmit({ name: localName, link: url });
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      title: "",
+      url: "",
+    },
+  });
 
-  const handleLocalName = (evt) => {
-    setLocalName(evt.target.value);
-  };
+  useEffect(() => {
+    reset();
+  }, [reset]);
 
-  const handleUrl = (evt) => {
-    setUrl(evt.target.value);
+  const onSubmit = (data) => {
+    handleAddPlaceSubmit({ name: data.title, link: data.url });
   };
 
   return (
@@ -24,7 +31,7 @@ export default function NewCard() {
       id="creation-form"
       className="popup__forms popup__forms-creation"
       noValidate
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <div className="popup__inputs">
         <div className="popup__inputs-container">
@@ -32,29 +39,56 @@ export default function NewCard() {
             className="popup__input"
             type="text"
             id="title"
-            name="title"
             placeholder="Título"
-            required
-            minLength={2}
-            maxLength={30}
-            onChange={handleLocalName}
+            {...register("title", {
+              required: "O título é obrigatório",
+              minLength: {
+                value: 2,
+                message: "O título deve ter pelo menos 2 caracteres",
+              },
+              maxLength: {
+                value: 26,
+                message: "O título deve ter no máximo 26 caracteres",
+              },
+            })}
+            maxLength={26}
           />
-          <span className="popup__input-error title-error" />
+          {errors.title && (
+            <span className="popup__input-error title-error">
+              {errors.title.message}
+            </span>
+          )}
         </div>
+
         <div className="popup__inputs-container">
           <input
             className="popup__input"
             type="url"
             id="url"
-            name="url"
             placeholder="Link da imagem"
-            required
-            onChange={handleUrl}
+            {...register("url", {
+              required: "O link da imagem é obrigatório",
+              pattern: {
+                value: /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i,
+                message: "Digite um link de imagem válido",
+              },
+            })}
           />
-          <span className="popup__input-error url-error" />
+          {errors.url && (
+            <span className="popup__input-error url-error">
+              {errors.url.message}
+            </span>
+          )}
         </div>
       </div>
-      <button className="popup__button" type="submit">
+
+      <button
+        className={
+          "popup__button" + (!isValid ? " popup__button-inactive" : "")
+        }
+        type="submit"
+        disabled={!isValid}
+      >
         Salvar
       </button>
     </form>
