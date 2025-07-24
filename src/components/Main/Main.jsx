@@ -138,3 +138,10 @@ export default function Main({
 }
 
 Main;
+
+// solved
+// * Adicionar validação de formulário
+// * Adicionar feat closepopup quando clicado "ESC" e fora do popup
+// * Adicionar popup de confirmação ao excluir cartão
+// * As fontes não estao sendo carregadas
+// * mostrar icone do lápis quando mouse em cima da foto de perfil
