@@ -1,5 +1,5 @@
 import plusSign from "../../../../../assets/images/plussign.svg";
-import CurrentUserContext from "../../../../../contexts/currentUserContext";
+import CurrentUserContext from "../../../../../contexts/CurrentUserContext";
 import { useContext } from "react";
 export default function ImagePopup(props) {
   const { name, link } = props.card;

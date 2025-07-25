@@ -7,7 +7,7 @@ import Popup from "./components/Popup/Popup";
 import Card from "./components/Card/Card";
 import ImagePopup from "./components/Card/ImagePopup/ImagePopup";
 import PopupConfirmation from "./components/Popup/components/popupConfirmation/PopupConfirmation";
-import CurrentUserContext from "../../contexts/currentUserContext";
+import CurrentUserContext from "../../contexts/CurrentUserContext";
 import { useContext, useEffect, useState } from "react";
 
 export default function Main({
