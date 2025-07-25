@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import CurrentUserContext from "../../../../../../contexts/currentUserContext";
+import CurrentUserContext from "../../../../../../contexts/CurrentUserContext";
 
 export default function EditProfile() {
   const { currentUser, handleUpdateUser } = useContext(CurrentUserContext);

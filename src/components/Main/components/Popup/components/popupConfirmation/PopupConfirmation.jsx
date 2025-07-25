@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import CurrentUserContext from "../../../../../../contexts/currentUserContext";
+import CurrentUserContext from "../../../../../../contexts/CurrentUserContext";
 
 export default function PopupConfirmation() {
   const userContext = useContext(CurrentUserContext);
