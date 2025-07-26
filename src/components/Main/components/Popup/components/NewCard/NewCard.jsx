@@ -47,8 +47,8 @@ export default function NewCard() {
                 message: "O título deve ter pelo menos 2 caracteres",
               },
               maxLength: {
-                value: 26,
-                message: "O título deve ter no máximo 26 caracteres",
+                value: 25,
+                message: "O título deve ter no máximo 25 caracteres",
               },
             })}
             maxLength={26}

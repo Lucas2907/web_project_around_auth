@@ -12,6 +12,42 @@ function App() {
   const [popupConfirmation, setPopupConfirmation] = useState(null);
   const [cards, setCards] = useState([]);
 
+  //pega info user atual
+  useEffect(() => {
+    api
+      .getInfoUser()
+      .then((response) => {
+        return !response.ok
+          ? Promise.reject("Deu erro no get info user")
+          : response.json();
+      })
+      .then((data) => {
+        setCurrentUser(data);
+      })
+
+      .catch((error) => {
+        console.log(`[GET]- /user-me ${error}`);
+      });
+  }, []);
+
+  // atualiza info user
+  const handleUpdateUser = (data) => {
+    (async () => {
+      await api
+        .setUserInfo(data)
+        .then(() => {
+          setCurrentUser({
+            name: data.name,
+            about: data.about,
+            avatar: currentUser.avatar,
+            _id: currentUser._id,
+          });
+          handleClosePopup();
+        })
+        .catch((error) => console.error(error));
+    })();
+  };
+
   //recebe cards inicias
   useEffect(() => {
     api
@@ -62,45 +98,10 @@ function App() {
       .then((response) => response.json())
       .then(
         setCards(cards.filter((cardDeleted) => cardDeleted._id !== card._id))
-      );
+      )
+      .catch((error) => console.error(error));
     handleClosePopup();
   }
-
-  //pega info user atual
-  useEffect(() => {
-    api
-      .getInfoUser()
-      .then((response) => {
-        return !response.ok
-          ? Promise.reject("Deu erro no get info user")
-          : response.json();
-      })
-      .then((data) => {
-        setCurrentUser(data);
-      })
-
-      .catch((error) => {
-        console.log(`[GET]- /user-me ${error}`);
-      });
-  }, []);
-
-  // atualiza info user
-  const handleUpdateUser = (data) => {
-    (async () => {
-      await api
-        .setUserInfo(data)
-        .then(() => {
-          setCurrentUser({
-            name: data.name,
-            about: data.about,
-            avatar: currentUser.avatar,
-            _id: currentUser._id,
-          });
-          handleClosePopup();
-        })
-        .catch((error) => console.error(error));
-    })();
-  };
 
   const handleUpdateAvatar = (data) => {
     (async () => {
