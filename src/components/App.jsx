@@ -4,6 +4,11 @@ import Footer from "./Footer/Footer";
 import { useEffect, useState } from "react";
 import api from "../utils/api";
 import CurrentUserContext from "../contexts/CurrentUserContext";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import Login from "./Login/Login";
+import Register from "./Register/Register";
+import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
+import InfoTooltip from "./InfoTooltip/InfoTooltip";
 
 function App() {
   const [currentUser, setCurrentUser] = useState({});
@@ -11,6 +16,47 @@ function App() {
   const [popupImage, setPopupImage] = useState(null);
   const [popupConfirmation, setPopupConfirmation] = useState(null);
   const [cards, setCards] = useState([]);
+
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
+  const [tooltipMessage, setTooltipMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleLogin = (userData) => {
+    setLoggedIn(true);
+    setUserEmail(userData.email);
+    setIsSuccess(true);
+    setTooltipMessage("Login realizado com sucesso!");
+    setIsInfoTooltipOpen(true);
+  };
+
+  useEffect(() => {
+    if (loggedIn) {
+      navigate("/");
+    }
+  }),
+    [loggedIn, navigate];
+
+  const handleRegister = (userData) => {
+    console.log("Register:", userData);
+    setIsSuccess(true);
+    setTooltipMessage("Cadastro realizado com sucesso!");
+    setIsInfoTooltipOpen(true);
+    navigate("/signin");
+  };
+
+  const handleSignOut = () => {
+    setLoggedIn(false);
+    setUserEmail("");
+    navigate("/signin");
+  };
+
+  const closeInfoTooltip = () => {
+    setIsInfoTooltipOpen(false);
+  };
 
   //pega info user atual
   useEffect(() => {
@@ -151,31 +197,45 @@ function App() {
 
   return (
     <div className="page">
-      <CurrentUserContext.Provider
-        value={{
-          currentUser,
-          handleUpdateUser,
-          handleUpdateAvatar,
-          handleAddPlaceSubmit,
-          handleCardDelete,
-          popupConfirmation,
-          handleClosePopup,
-        }}
-      >
-        <Header />
-        <Main
-          cards={cards}
-          onCardLike={handleCardLike}
-          onOpenPopupImage={handleOpenPopupImage}
-          onOpenPopup={handleOpenPopup}
-          onOpenPopupConfirmation={handleOpenPopupConfirmation}
-          onClosePopup={handleClosePopup}
-          popup={popup}
-          popupImage={popupImage}
-          popupConfirmation={popupConfirmation}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <CurrentUserContext.Provider
+                value={{
+                  currentUser,
+                  handleUpdateUser,
+                  handleUpdateAvatar,
+                  handleAddPlaceSubmit,
+                  handleCardDelete,
+                  popupConfirmation,
+                  handleClosePopup,
+                }}
+              >
+                <Header userEmail={userEmail} onSignOut={handleSignOut} />
+                <Main
+                  cards={cards}
+                  onCardLike={handleCardLike}
+                  onOpenPopupImage={handleOpenPopupImage}
+                  onOpenPopup={handleOpenPopup}
+                  onOpenPopupConfirmation={handleOpenPopupConfirmation}
+                  onClosePopup={handleClosePopup}
+                  popup={popup}
+                  popupImage={popupImage}
+                  popupConfirmation={popupConfirmation}
+                />
+                <Footer />
+              </CurrentUserContext.Provider>
+            </ProtectedRoute>
+          }
         />
-        <Footer />
-      </CurrentUserContext.Provider>
+        <Route path="/signin" element={<Login onLogin={handleLogin} />} />
+        <Route
+          path="/signup"
+          element={<Register onRegister={handleRegister} />}
+        />
+      </Routes>
     </div>
   );
 }
