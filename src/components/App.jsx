@@ -213,7 +213,11 @@ function App() {
                   handleClosePopup,
                 }}
               >
-                <Header userEmail={userEmail} onSignOut={handleSignOut} />
+                <Header
+                  userEmail={userEmail}
+                  onSignOut={handleSignOut}
+                  children={"Sair"}
+                />
                 <Main
                   cards={cards}
                   onCardLike={handleCardLike}
