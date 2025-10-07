@@ -1,13 +1,31 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header from "../Header/Header";
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isValid, setIsValid] = useState(false);
+
+  function isValidEmail(email) {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const xssPattern = /[<>"'();/\\[\]{}=|:]/;
+    return emailPattern.test(email) & !xssPattern.test(email);
+  }
+
+  function isSafePassword(password) {
+    const passwordPattern =
+      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#!])[0-9a-zA-Z$*&@#!]{8,}$/;
+    return passwordPattern.test(password);
+  }
+
+  useEffect(() => {
+    setIsValid(isSafePassword(password) && isValidEmail(email));
+  }, [email, password]);
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
+    if (!isValid) return;
     onLogin({ email, password });
   };
 
@@ -35,7 +53,13 @@ function Login({ onLogin }) {
             />
           </div>
           <div className="auth__actions">
-            <button className="auth__submit" type="submit">
+            <button
+              className={
+                "auth__submit " + (isValid ? "" : "auth__submit-disabled")
+              }
+              type="submit"
+              disabled={!isValid}
+            >
               Entrar
             </button>
           </div>

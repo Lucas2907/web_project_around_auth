@@ -9,6 +9,7 @@ import Login from "./Login/Login";
 import Register from "./Register/Register";
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import InfoTooltip from "./InfoTooltip/InfoTooltip";
+import { register, authorize, checkToken } from "../utils/auth";
 
 function App() {
   const [currentUser, setCurrentUser] = useState({});
@@ -26,37 +27,73 @@ function App() {
   const navigate = useNavigate();
 
   const handleLogin = (userData) => {
-    setLoggedIn(true);
-    setUserEmail(userData.email);
-    setIsSuccess(true);
-    setTooltipMessage("Login realizado com sucesso!");
-    setIsInfoTooltipOpen(true);
+    authorize(userData.email, userData.password)
+      .then((data) => {
+        if (data.token) {
+          setLoggedIn(true);
+          setUserEmail(userData.email);
+          navigate("/");
+        }
+      })
+      .catch((error) => {
+        console.log("Erro no login:", error);
+        let message;
+        if (error === 400) {
+          message = "Um ou mais campos não foram fornecidos";
+        } else if (error === 401) {
+          message = "o e-mail ou senha fornecido não correspondem";
+        } else {
+          message = "Ops, algo deu errado! Tente novamente.";
+        }
+        setIsSuccess(false);
+        setTooltipMessage(message);
+        setIsInfoTooltipOpen(true);
+      });
   };
 
-  useEffect(() => {
-    if (loggedIn) {
-      navigate("/");
-    }
-  }),
-    [loggedIn, navigate];
-
   const handleRegister = (userData) => {
-    console.log("Register:", userData);
-    setIsSuccess(true);
-    setTooltipMessage("Cadastro realizado com sucesso!");
-    setIsInfoTooltipOpen(true);
-    navigate("/signin");
+    register(userData.email, userData.password)
+      .then((data) => {
+        setIsSuccess(true);
+        setTooltipMessage("Cadastro realizado com sucesso!");
+        setIsInfoTooltipOpen(true);
+        console.log(data);
+        navigate("/signin");
+      })
+      .catch(() => {
+        setIsSuccess(false);
+        setTooltipMessage(
+          `Email fornecido ja cadastrado, faça login para aceder a plataforma!`
+        );
+        setIsInfoTooltipOpen(true);
+      });
   };
 
   const handleSignOut = () => {
     setLoggedIn(false);
     setUserEmail("");
-    navigate("/signin");
+    localStorage.remove("jwt");
   };
 
   const closeInfoTooltip = () => {
     setIsInfoTooltipOpen(false);
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      checkToken(token)
+        .then((userData) => {
+          setLoggedIn(true);
+          navigate("/");
+          setUserEmail(userData.data.email);
+        })
+        .catch((error) => {
+          localStorage.removeItem("jwt");
+          console.log("Token Inválido", error);
+        });
+    }
+  }, [navigate]);
 
   //pega info user atual
   useEffect(() => {
@@ -215,7 +252,8 @@ function App() {
               >
                 <Header
                   userEmail={userEmail}
-                  onSignOut={handleSignOut}
+                  path={"/signin"}
+                  onSignout={handleSignOut}
                   children={"Sair"}
                 />
                 <Main
@@ -240,6 +278,12 @@ function App() {
           element={<Register onRegister={handleRegister} />}
         />
       </Routes>
+      <InfoTooltip
+        isOpen={isInfoTooltipOpen}
+        onClose={closeInfoTooltip}
+        isSuccess={isSuccess}
+        message={tooltipMessage}
+      />
     </div>
   );
 }

@@ -1,22 +1,55 @@
-import express from "express";
-const router = express.Router();
+const BASE_URL = "https://se-register-api.en.tripleten-services.com/v1";
 
-router.post("/signup", (req, res) => {
-  const { email, password } = req.body;
-  res.send({ message: "Usuário registrado com sucesso" });
-});
+export const register = (email, password) => {
+  return fetch(`${BASE_URL}/signup`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  }).then((response) => {
+    if (response.ok) {
+      return response.json();
+    }
+    return Promise.reject(response.status);
+  });
+};
 
-router.post("/signin", (req, res) => {
-  const { email, password } = req.body;
-  res.send({ message: "Usuário logado com sucesso" });
-});
-
-export function authMiddleware(req, res, next) {
-  const auth = false;
-  if (!auth) {
-    return res.redirect("/signin");
+export const authorize = (email, password) => {
+  return fetch(`${BASE_URL}/signin`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      return Promise.reject(response.status);
+    })
+    .then((data) => {
+      if (data.token) {
+        localStorage.setItem("jwt", data.token);
+        return data;
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      throw err;
+    });
+};
+export const checkToken = async (token) => {
+  const response = await fetch(`${BASE_URL}/users/me`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (response.ok) {
+    return response.json();
   }
-  next();
-}
-
-export default router;
+  return await Promise.reject(`Erro: ${response.status}`);
+};
