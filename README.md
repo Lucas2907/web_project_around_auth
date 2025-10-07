@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <h1 align="center">
   AROUND WORLD
 </h1>
@@ -115,3 +116,6 @@ Para contribuir com o Web Project Around, siga estas etapas:
 ## 👤 Autor
 
 ### **Lucas Pasa Garcia**
+=======
+# Tripleten web_project_around_auth
+>>>>>>> a98abb11239534b9c750e9d1461954555f827e8b
